@@ -6,6 +6,8 @@ Usage of local-tls-proxy
         KeyPair certificate file path (default "ca.pem")
   -ca-key string
         KeyPair key file path (default "ca.key")
+  -install
+        install CA certificate
   -port int
         server port (default 5443)
 ```
