@@ -17,6 +17,7 @@ import (
 	"github.com/youmark/pkcs8"
 	"local-tls-proxy/ca"
 	"local-tls-proxy/internal/streamcopy"
+	"local-tls-proxy/pkg/installca"
 	"log"
 	"net"
 	"os"
@@ -33,10 +34,12 @@ func main() {
 	var caKey string
 	var caCert string
 	var port int
+	var install bool
 
 	flag.StringVar(&caKey, "ca-key", "ca.key", "KeyPair key file path")
 	flag.StringVar(&caCert, "ca-cert", "ca.pem", "KeyPair certificate file path")
 	flag.IntVar(&port, "port", 5443, "server port")
+	flag.BoolVar(&install, "install", false, "install CA certificate")
 	flag.Parse()
 
 	caObj, err := initializeCa(caKey, caCert)
@@ -44,6 +47,14 @@ func main() {
 		log.Panicln(err)
 	}
 	_ = caObj
+
+	if install {
+		err = installca.InstallCA(caObj.Cert.Raw)
+		if err != nil {
+			log.Panicln(err)
+		}
+		return
+	}
 
 	certPool := x509.NewCertPool()
 	certPool.AddCert(caObj.Cert)
